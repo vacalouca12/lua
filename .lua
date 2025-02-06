@@ -51,6 +51,213 @@ debugText.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
 
 
+-- Criar uma aba para a função de Informações
+local InfoTab = Window:MakeTab({
+    Name = "Informações",
+    Icon = "rbxassetid://4483345998",  -- Ícone do menu
+    PremiumOnly = false
+})
+
+-- Adicionar título na interface
+InfoTab:AddParagraph("Informações", "Aqui estão os detalhes sobre o menu e o desenvolvedor.")
+
+-- Informações do desenvolvedor
+InfoTab:AddParagraph("Desenvolvedor", "Feito por: Alone")
+
+-- Informações sobre bugs
+InfoTab:AddParagraph("Problemas", "Caso encontre algum bug, entre no servidor do script e reporte o erro.")
+
+-- Informações adicionais
+InfoTab:AddParagraph("Nota", "Este menu está em constante atualização e melhorias.")
+
+-- Adicionar aviso de Beta
+InfoTab:AddParagraph("Aviso", "⚠️ Este menu está em fase Beta! Caso algo não funcione, por favor reporte no servidor.")
+
+-- Exemplo de como adicionar um botão de navegação para abrir o Discord
+InfoTab:AddButton({
+    Name = "Entrar no Discord",
+    Callback = function()
+        -- Substitua o link abaixo pelo seu link real do Discord
+        local discordLink = "https://discord.gg/2YzRZdTTn5"  -- Insira o link correto
+        setclipboard(discordLink)  -- Copia o link para a área de transferência
+        OrionLib:MakeNotification({
+            Name = "Link Copiado",
+            Content = "O link do Discord foi copiado para sua área de transferência!",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+})
+
+-- Criar um botão que alerta que o script é feito pelo Alone
+InfoTab:AddButton({
+    Name = "Sobre o Script",
+    Callback = function()
+        OrionLib:MakeNotification({
+            Name = "Informações",
+            Content = "Este script foi desenvolvido por Alone. Obrigado por usar!",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+})
+
+
+
+-- Criar uma aba para a função Anti-AFK
+local AntiAFKTab = Window:MakeTab({
+    Name = "Anti AFK",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Variável para ativar/desativar o Anti-AFK
+local AntiAFK_Ativo = false
+
+-- Função para ativar/desativar
+local function ToggleAntiAFK(ativar)
+    if ativar then
+        AntiAFK_Ativo = true
+
+        -- Loop para enganar o sistema de AFK
+        task.spawn(function()
+            while AntiAFK_Ativo do
+                local virtualUser = game:GetService("VirtualUser")
+                virtualUser:CaptureController()
+
+                -- Simula uma interação
+                -- Se estiver em desktop, simula um clique
+                if game:GetService("UserInputService").TouchEnabled then
+                    -- Para mobile, vamos simular um toque
+                    virtualUser:ClickButton1(Vector2.new(0, 0)) -- Simula o clique em uma posição
+                else
+                    -- Para desktop, simula um clique do botão direito do mouse
+                    virtualUser:ClickButton2(Vector2.new(0, 0)) -- Simula um clique do mouse
+                end
+
+                wait(60) -- A cada 60 segundos, o player "interage" para não ser kickado
+            end
+        end)
+
+        -- Notificação de ativação
+        OrionLib:MakeNotification({
+            Name = "Anti AFK",
+            Content = "✅ Anti-AFK ativado! Você não será kickado por inatividade.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    else
+        AntiAFK_Ativo = false
+
+        -- Notificação de desativação
+        OrionLib:MakeNotification({
+            Name = "Anti AFK",
+            Content = "❌ Anti-AFK desativado! Você pode ser kickado agora.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+end
+
+-- Criar botão para ativar o Anti-AFK
+AntiAFKTab:AddButton({
+    Name = "Ativar Anti-AFK",
+    Callback = function()
+        ToggleAntiAFK(true) -- Ativa o Anti-AFK
+    end
+})
+
+-- Criar botão para desativar o Anti-AFK
+AntiAFKTab:AddButton({
+    Name = "Desativar Anti-AFK",
+    Callback = function()
+        ToggleAntiAFK(false) -- Desativa o Anti-AFK
+    end
+})
+
+-- Adicionar um aviso fixo abaixo dos botões
+AntiAFKTab:AddParagraph("⚠️ Aviso", "O Anti-AFK impede você de ser kickado por inatividade!")
+
+
+
+-- Criar uma aba para a função de God Mode
+local GodModeTab = Window:MakeTab({
+    Name = "God Mode",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+-- Função para ativar/desativar o God Mode
+local GodModeAtivo = false
+
+local function ToggleGodMode(ativar)
+    local personagem = game.Players.LocalPlayer.Character
+
+    -- Verificar se o personagem existe e tem o componente "Humanoid"
+    if personagem and personagem:FindFirstChild("Humanoid") then
+        local humanoide = personagem.Humanoid
+        
+        if ativar then
+            GodModeAtivo = true
+            -- Criar loop para manter a vida no máximo
+            task.spawn(function()
+                while GodModeAtivo do
+                    if humanoide.Health < humanoide.MaxHealth then
+                        humanoide.Health = humanoide.MaxHealth
+                    end
+                    task.wait(0.1) -- Pequena espera para evitar travamentos
+                end
+            end)
+
+            -- Notificação de ativação
+            OrionLib:MakeNotification({
+                Name = "God Mode",
+                Content = "✅ God Mode ativado! Você está invencível.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        else
+            GodModeAtivo = false
+            -- Notificação de desativação
+            OrionLib:MakeNotification({
+                Name = "God Mode",
+                Content = "❌ God Mode desativado! Você pode morrer agora.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    else
+        warn("❌ Personagem ou Humanoid não encontrado!")
+    end
+end
+
+-- Criar botão para ativar o God Mode
+GodModeTab:AddButton({
+    Name = "Ativar God Mode",
+    Callback = function()
+        ToggleGodMode(true)  -- Ativa o God Mode
+    end
+})
+
+-- Criar botão para desativar o God Mode
+GodModeTab:AddButton({
+    Name = "Desativar God Mode",
+    Callback = function()
+        ToggleGodMode(false)  -- Desativa o God Mode
+    end
+})
+
+-- Adicionar um aviso fixo abaixo dos botões
+GodModeTab:AddParagraph("⚠️ Aviso", "O God Mode está em fase BETA! Caso pare de funcionar, tente reativá-lo.")
+
+-- **Otimização para Mobile**:
+-- O código já é eficiente, pois ele utiliza `task.spawn` para rodar em uma thread separada, o que permite que o loop do God Mode rode sem travamentos.
+-- Para otimizar ainda mais para dispositivos móveis, o código já está com `task.wait(0.1)` para garantir que o desempenho não seja afetado.
+
+
+
+
+
 -- Criar uma aba invisível
 local InvisibleTab = Window:MakeTab({
     Name = "‎invisivel", -- Nome totalmente invisível (caractere especial invisível)
